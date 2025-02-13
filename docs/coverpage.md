@@ -1,6 +1,6 @@
 # GA4MP
 
-> > An Open-Source Google Analytics 4 Client-Side Protocol Implementation 
+> > An Open-Source Google Analytics 4 Client-Side Protocol Implementation
 
 - Lightweight < 4kb (compressed)
 - Full Protocol Documentation
@@ -9,5 +9,5 @@
 - UMD/CJS/ESM Builds
 
 [Get Started](#main)
-[GitHub](https://github.com/analytics-debugger/ga4mp)
-[NPM](https://www.npmjs.com/package/@analytics-debugger/ga4mp)
+[GitHub](https://github.com/aidinabedi/ga4mp)
+[NPM](https://www.npmjs.com/package/@aidinabedi/ga4mp)

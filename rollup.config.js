@@ -13,7 +13,7 @@ const terserOptions = {
 module.exports = [
     {
         input: "src/index.js",
-        output: [                      
+        output: [
             {
                 file: "dist/ga4mp.amd.js",
                 format: "amd"
@@ -49,9 +49,9 @@ module.exports = [
         plugins: [
             license({
                 banner: `/*!
-* 
+*
 *   <%= pkg.name %> <%= pkg.version %>
-*   https://github.com/analytics-debugger/ga4mp
+*   https://github.com/aidinabedi/ga4mp
 *
 *   Copyright (c) David Vallejo (https://www.thyngster.com).
 *   This source code is licensed under the MIT license found in the
@@ -59,7 +59,7 @@ module.exports = [
 *
 */
 `,
-            }),            
+            }),
             resolve(),
             babel({
                 exclude: "node_modules/**"

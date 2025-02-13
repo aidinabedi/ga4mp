@@ -2,9 +2,9 @@
 # GA4MP - Google Analytics 4 Measurement Protocol
 
 This is an open-source implementation for the *client-side* protocol used by **Google Analytics 4**. When I mention "**client-side**" is because it must be differentiated with the official [GA4 Measurement Protocol](https://developers.google.com/analytics/devguides/collection/protocol/ga4) offered by Google.
-  
+
 This library implements the public **Google Analytics 4** protocol to make possible to do a full server-side tracking using NODE/JS which is not actually possible with the official **Measurement Protocol** , which is meant only to augment the current GA4 data and it's not ready for doing a full tracking.
-  
+
 Main differences with the official offerser server-side protocol are:
 
 - Trigger new sessions and visits starts
@@ -25,7 +25,7 @@ If we compare this library with the official GTAG implementation.
 
 #### **ES6 Imports**
 
-    import  ga4mp  from  '@analytics-debugger/ga4mp'
+    import  ga4mp  from  '@aidinabedi/ga4mp'
     const  ga4track = ga4mp(["G-THYNGSTER"], {
     	user_id:  undefined,
     	non_personalized_ads:  true,
@@ -33,7 +33,7 @@ If we compare this library with the official GTAG implementation.
     });
 
 #### **Browser**
-<.script  src="https://cdn.jsdelivr.net/npm/@analytics-debugger/ga4mp@latest/dist/ga4mp.umd.min.js">< /script>
+<.script  src="https://cdn.jsdelivr.net/npm/@aidinabedi/ga4mp@latest/dist/ga4mp.umd.min.js">< /script>
 
     const  ga4track  =  ga4mp(["G-THYNGSTER"],  {
     	user_id: undefined,
