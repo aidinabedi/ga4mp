@@ -1,8 +1,10 @@
-import {babel} from '@rollup/plugin-babel';
+import { execSync } from "child_process";
+import { babel } from "@rollup/plugin-babel";
 import terser from "@rollup/plugin-terser";
 import resolve from "@rollup/plugin-node-resolve";
-const path = require('path');
-const license = require('rollup-plugin-license');
+const dts = require("rollup-plugin-dts").default;
+const path = require("path");
+const license = require("rollup-plugin-license");
 
 const terserOptions = {
     compress: {
@@ -87,6 +89,26 @@ module.exports = [
                 format: "esm",
                 plugins: [terser(terserOptions)]
             }
+        ]
+    },
+    {
+        input: "types/index.d.ts",
+        output: {
+            file: "dist/ga4mp.d.ts",
+            format: "es"
+        },
+        plugins: [
+            {
+                name: "tsc",
+                buildStart() {
+                    try {
+                        execSync("tsc", { stdio: "inherit" });
+                    } catch {
+                        // ignore errors since they're already printed to the console
+                    }
+                }
+            },
+            dts()
         ]
     }
 ];

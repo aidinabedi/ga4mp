@@ -58,3 +58,4 @@ demo
 yarn.lock
 package-lock.json
 internal.html
+/types
