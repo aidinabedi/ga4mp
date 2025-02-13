@@ -55,7 +55,5 @@ _site
 
 demo
 .github
-yarn.lock
-package-lock.json
 internal.html
 /types
