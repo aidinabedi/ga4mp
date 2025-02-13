@@ -17,7 +17,7 @@ const isNumber = (val) => 'number' === typeof val && !isNaN(val);
 const isString = (val) => val != null && typeof val === 'string';
 const randomInt = () =>
     Math.floor(Math.random() * (2147483647 - 0 + 1) + 0);
-const timestampInSeconds = () => Math.floor((new Date() * 1) / 1000);
+const timestampInSeconds = () => Math.floor(Date.now() / 1000);
 const getEnvironment = () => {
     let env;
     if (typeof window !== 'undefined' && typeof window.document !== 'undefined')
@@ -33,8 +33,8 @@ const getEnvironment = () => {
 
 /**
  * Function to sanitize values based on GA4 Model Limits
- * @param {string} val
- * @param {integer} maxLength
+ * @param {string|number} val
+ * @param {number} maxLength
  * @returns
  */
 
@@ -164,9 +164,18 @@ const ecommerceEvents = [
 ];
 
 const sendRequest = (endpoint, payload, mode = 'browser', opts = {}) => {
-    const qs = new URLSearchParams(
-        JSON.parse(JSON.stringify(payload))
-    ).toString();
+    const payloadParsed = JSON.parse(JSON.stringify(payload));
+    let qs = '';
+    if (opts.encode_search_params) {
+        // Ensure spaces are not replaced with +
+        qs = Object.entries(payloadParsed)
+            .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+            .join('&');
+    } else {
+        qs = new URLSearchParams(
+            payloadParsed
+        ).toString();
+    }
     if (mode === 'browser') {
         navigator?.sendBeacon([endpoint, qs].join('?'));
     } else {
@@ -221,7 +230,7 @@ const clientHints = (mode) => {
                 _user_agent_architecture: d.architecture,
                 _user_agent_bitness: d.bitness,
                 _user_agent_full_version_list: encodeURIComponent(
-                    (Object.values(d.fullVersionList) || navigator?.userAgentData?.brands)
+                    (d.fullVersionList && Object.values(d.fullVersionList) || navigator?.userAgentData?.brands)
                         .map((h) => {
                             return [h.brand, h.version].join(';')
                         })
@@ -363,7 +372,7 @@ const ga4mp = function (measurement_ids, config = {}) {
     /**
      * Set an Sticky Event Parameter, it wil be attached to all events
      * @param {string} key
-     * @param {string|number|Fn} value
+     * @param {string|number|Function} value
      * @returns
      */
     const setEventsParameter = (key, value) => {
@@ -486,33 +495,37 @@ const ga4mp = function (measurement_ids, config = {}) {
     };
 
     /**
+     * Grab current session Id
+     * @returns number
+     */
+    const getHitIndex = () => {
+        return internalModel.payloadData.hit_count
+    };
+
+    /**
      * Track Event
      * @param {string} eventName
      * @param {object} eventParameters
      * @param {boolean} forceDispatch
      */
-    const getHitIndex = () => {
-        return internalModel.payloadData.hit_count
-    };
     const trackEvent = (
         eventName,
         eventParameters = {},
-        sessionControl = {},
         forceDispatch = true
     ) => {
         // We want to wait for the CH Promise to fullfill
-        clientHints(internalModel?.mode).then((ch) => {            
-            if (ch) {                
+        clientHints(internalModel?.mode).then((ch) => {
+            if (ch) {
                 internalModel.payloadData = Object.assign(
                     internalModel.payloadData,
                     ch
-                );                
+                );
             }
             const payload = buildPayload(eventName, eventParameters);
             if (payload && forceDispatch) {
                 for (let i = 0; i < payload.tid.length; i++) {
                     let r = JSON.parse(JSON.stringify(payload));
-                    r.tid = payload.tid[i];               
+                    r.tid = payload.tid[i];
                     sendRequest(internalModel.endpoint, r, internalModel.mode, {
                         user_agent: internalModel?.user_agent,
                     });
@@ -523,8 +536,8 @@ const ga4mp = function (measurement_ids, config = {}) {
                 if (eventsCount >= internalModel.queueDispatchMaxEvents) {
                     dispatchQueue();
                 }
-            }            
-        });             
+            }
+        });
     };
     return {
         version: internalModel.version,

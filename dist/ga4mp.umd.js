@@ -1,7 +1,7 @@
 /*!
-* 
-*   @analytics-debugger/ga4mp 0.0.8
-*   https://github.com/analytics-debugger/ga4mp
+*
+*   @aidinabedi/ga4mp 0.0.9
+*   https://github.com/aidinabedi/ga4mp
 *
 *   Copyright (c) David Vallejo (https://www.thyngster.com).
 *   This source code is licensed under the MIT license found in the
@@ -15,19 +15,62 @@
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.ga4mp = factory());
 })(this, (function () { 'use strict';
 
+  function _arrayLikeToArray(r, a) {
+    (null == a || a > r.length) && (a = r.length);
+    for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
+    return n;
+  }
+  function _arrayWithHoles(r) {
+    if (Array.isArray(r)) return r;
+  }
   function _extends() {
-    _extends = Object.assign ? Object.assign.bind() : function (target) {
-      for (var i = 1; i < arguments.length; i++) {
-        var source = arguments[i];
-        for (var key in source) {
-          if (Object.prototype.hasOwnProperty.call(source, key)) {
-            target[key] = source[key];
-          }
+    return _extends = Object.assign ? Object.assign.bind() : function (n) {
+      for (var e = 1; e < arguments.length; e++) {
+        var t = arguments[e];
+        for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]);
+      }
+      return n;
+    }, _extends.apply(null, arguments);
+  }
+  function _iterableToArrayLimit(r, l) {
+    var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"];
+    if (null != t) {
+      var e,
+        n,
+        i,
+        u,
+        a = [],
+        f = !0,
+        o = !1;
+      try {
+        if (i = (t = t.call(r)).next, 0 === l) {
+          if (Object(t) !== t) return;
+          f = !1;
+        } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0);
+      } catch (r) {
+        o = !0, n = r;
+      } finally {
+        try {
+          if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return;
+        } finally {
+          if (o) throw n;
         }
       }
-      return target;
-    };
-    return _extends.apply(this, arguments);
+      return a;
+    }
+  }
+  function _nonIterableRest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+  function _slicedToArray(r, e) {
+    return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest();
+  }
+  function _unsupportedIterableToArray(r, a) {
+    if (r) {
+      if ("string" == typeof r) return _arrayLikeToArray(r, a);
+      var t = {}.toString.call(r).slice(8, -1);
+      return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0;
+    }
   }
 
   var trim = function trim(str, chars) {
@@ -51,7 +94,7 @@
     return Math.floor(Math.random() * (2147483647 - 0 + 1) + 0);
   };
   var timestampInSeconds = function timestampInSeconds() {
-    return Math.floor(new Date() * 1 / 1000);
+    return Math.floor(Date.now() / 1000);
   };
   var getEnvironment = function getEnvironment() {
     var env;
@@ -61,8 +104,8 @@
 
   /**
    * Function to sanitize values based on GA4 Model Limits
-   * @param {string} val
-   * @param {integer} maxLength
+   * @param {string|number} val
+   * @param {number} maxLength
    * @returns
    */
 
@@ -178,10 +221,22 @@
   var sendRequest = function sendRequest(endpoint, payload) {
     var mode = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'browser';
     var opts = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
-    var qs = new URLSearchParams(JSON.parse(JSON.stringify(payload))).toString();
+    var payloadParsed = JSON.parse(JSON.stringify(payload));
+    var qs = '';
+    if (opts.encode_search_params) {
+      // Ensure spaces are not replaced with +
+      qs = Object.entries(payloadParsed).map(function (_ref) {
+        var _ref2 = _slicedToArray(_ref, 2),
+          key = _ref2[0],
+          value = _ref2[1];
+        return "".concat(key, "=").concat(encodeURIComponent(value));
+      }).join('&');
+    } else {
+      qs = new URLSearchParams(payloadParsed).toString();
+    }
     if (mode === 'browser') {
       var _navigator;
-      (_navigator = navigator) === null || _navigator === void 0 ? void 0 : _navigator.sendBeacon([endpoint, qs].join('?'));
+      (_navigator = navigator) === null || _navigator === void 0 || _navigator.sendBeacon([endpoint, qs].join('?'));
     } else {
       var scheme = endpoint.split('://')[0];
       var req = require("".concat(scheme));
@@ -207,26 +262,26 @@
   };
 
   var clientHints = function clientHints(mode) {
-    var _navigator, _navigator$userAgentD;
+    var _navigator;
     if (mode === 'node' || typeof window === 'undefined' || typeof window !== 'undefined' && !('navigator' in window)) {
       return new Promise(function (resolve) {
         resolve(null);
       });
     }
-    if (!((_navigator = navigator) !== null && _navigator !== void 0 && (_navigator$userAgentD = _navigator.userAgentData) !== null && _navigator$userAgentD !== void 0 && _navigator$userAgentD.getHighEntropyValues)) return new Promise(function (resolve) {
+    if (!((_navigator = navigator) !== null && _navigator !== void 0 && (_navigator = _navigator.userAgentData) !== null && _navigator !== void 0 && _navigator.getHighEntropyValues)) return new Promise(function (resolve) {
       resolve(null);
     });
     return navigator.userAgentData.getHighEntropyValues(['platform', 'platformVersion', 'architecture', 'model', 'uaFullVersion', 'bitness', 'fullVersionList', 'wow64']).then(function (d) {
-      var _navigator2, _navigator2$userAgent, _navigator3, _navigator3$userAgent, _navigator4, _navigator4$userAgent;
+      var _navigator2, _navigator3, _navigator4;
       return {
         _user_agent_architecture: d.architecture,
         _user_agent_bitness: d.bitness,
-        _user_agent_full_version_list: encodeURIComponent((Object.values(d.fullVersionList) || ((_navigator2 = navigator) === null || _navigator2 === void 0 ? void 0 : (_navigator2$userAgent = _navigator2.userAgentData) === null || _navigator2$userAgent === void 0 ? void 0 : _navigator2$userAgent.brands)).map(function (h) {
+        _user_agent_full_version_list: encodeURIComponent((d.fullVersionList && Object.values(d.fullVersionList) || ((_navigator2 = navigator) === null || _navigator2 === void 0 || (_navigator2 = _navigator2.userAgentData) === null || _navigator2 === void 0 ? void 0 : _navigator2.brands)).map(function (h) {
           return [h.brand, h.version].join(';');
         }).join('|')),
         _user_agent_mobile: d.mobile ? 1 : 0,
-        _user_agent_model: d.model || ((_navigator3 = navigator) === null || _navigator3 === void 0 ? void 0 : (_navigator3$userAgent = _navigator3.userAgentData) === null || _navigator3$userAgent === void 0 ? void 0 : _navigator3$userAgent.mobile),
-        _user_agent_platform: d.platform || ((_navigator4 = navigator) === null || _navigator4 === void 0 ? void 0 : (_navigator4$userAgent = _navigator4.userAgentData) === null || _navigator4$userAgent === void 0 ? void 0 : _navigator4$userAgent.platform),
+        _user_agent_model: d.model || ((_navigator3 = navigator) === null || _navigator3 === void 0 || (_navigator3 = _navigator3.userAgentData) === null || _navigator3 === void 0 ? void 0 : _navigator3.mobile),
+        _user_agent_platform: d.platform || ((_navigator4 = navigator) === null || _navigator4 === void 0 || (_navigator4 = _navigator4.userAgentData) === null || _navigator4 === void 0 ? void 0 : _navigator4.platform),
         _user_agent_platform_version: d.platformVersion,
         _user_agent_wow64: d.wow64 ? 1 : 0
       };
@@ -334,7 +389,7 @@
     /**
      * Set an Sticky Event Parameter, it wil be attached to all events
      * @param {string} key
-     * @param {string|number|Fn} value
+     * @param {string|number|Function} value
      * @returns
      */
     var setEventsParameter = function setEventsParameter(key, value) {
@@ -437,17 +492,22 @@
     };
 
     /**
+     * Grab current session Id
+     * @returns number
+     */
+    var getHitIndex = function getHitIndex() {
+      return internalModel.payloadData.hit_count;
+    };
+
+    /**
      * Track Event
      * @param {string} eventName
      * @param {object} eventParameters
      * @param {boolean} forceDispatch
      */
-    var getHitIndex = function getHitIndex() {
-      return internalModel.payloadData.hit_count;
-    };
     var trackEvent = function trackEvent(eventName) {
       var eventParameters = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      var forceDispatch = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
+      var forceDispatch = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
       // We want to wait for the CH Promise to fullfill
       clientHints(internalModel === null || internalModel === void 0 ? void 0 : internalModel.mode).then(function (ch) {
         if (ch) {
