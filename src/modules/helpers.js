@@ -19,7 +19,7 @@ export const isObject = (val) =>
 export const isString = (val) => val != null && typeof val === 'string'
 export const randomInt = () =>
     Math.floor(Math.random() * (2147483647 - 0 + 1) + 0)
-export const timestampInSeconds = () => Math.floor((new Date() * 1) / 1000)
+export const timestampInSeconds = () => Math.floor(Date.now() / 1000)
 export const getEnvironment = () => {
     let env
     if (typeof window !== 'undefined' && typeof window.document !== 'undefined')
@@ -63,8 +63,8 @@ export const pageDetails = () => {
 
 /**
  * Function to sanitize values based on GA4 Model Limits
- * @param {string} val
- * @param {integer} maxLength
+ * @param {string|number} val
+ * @param {number} maxLength
  * @returns
  */
 

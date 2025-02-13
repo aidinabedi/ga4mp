@@ -121,7 +121,7 @@ const ga4mp = function (measurement_ids, config = {}) {
     /**
      * Set an Sticky Event Parameter, it wil be attached to all events
      * @param {string} key
-     * @param {string|number|Fn} value
+     * @param {string|number|Function} value
      * @returns
      */
     const setEventsParameter = (key, value) => {
@@ -244,33 +244,37 @@ const ga4mp = function (measurement_ids, config = {}) {
     }
 
     /**
+     * Grab current session Id
+     * @returns number
+     */
+    const getHitIndex = () => {
+        return internalModel.payloadData.hit_count
+    }
+
+    /**
      * Track Event
      * @param {string} eventName
      * @param {object} eventParameters
      * @param {boolean} forceDispatch
      */
-    const getHitIndex = () => {
-        return internalModel.payloadData.hit_count
-    }
     const trackEvent = (
         eventName,
         eventParameters = {},
-        sessionControl = {},
         forceDispatch = true
     ) => {
         // We want to wait for the CH Promise to fullfill
-        clientHints(internalModel?.mode).then((ch) => {            
-            if (ch) {                
+        clientHints(internalModel?.mode).then((ch) => {
+            if (ch) {
                 internalModel.payloadData = Object.assign(
                     internalModel.payloadData,
                     ch
-                )                
+                )
             }
-            const payload = buildPayload(eventName, eventParameters, sessionControl)
+            const payload = buildPayload(eventName, eventParameters)
             if (payload && forceDispatch) {
                 for (let i = 0; i < payload.tid.length; i++) {
                     let r = JSON.parse(JSON.stringify(payload))
-                    r.tid = payload.tid[i]               
+                    r.tid = payload.tid[i]
                     sendRequest(internalModel.endpoint, r, internalModel.mode, {
                         user_agent: internalModel?.user_agent,
                     })
@@ -281,8 +285,8 @@ const ga4mp = function (measurement_ids, config = {}) {
                 if (eventsCount >= internalModel.queueDispatchMaxEvents) {
                     dispatchQueue()
                 }
-            }            
-        })             
+            }
+        })
     }
     return {
         version: internalModel.version,
