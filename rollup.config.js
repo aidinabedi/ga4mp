@@ -15,6 +15,15 @@ module.exports = [
         input: "src/index.js",
         output: [
             {
+                file: "dist/ga4mp.js",
+                format: "cjs"
+            },
+            {
+                file: "dist/ga4mp.min.js",
+                format: "cjs",
+                plugins: [terser(terserOptions)]
+            },
+            {
                 file: "dist/ga4mp.amd.js",
                 format: "amd"
             },
@@ -58,7 +67,7 @@ module.exports = [
 *   LICENSE file in the root directory of this source tree.
 *
 */
-`,
+`
             }),
             resolve(),
             babel({

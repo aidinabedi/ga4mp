@@ -2,7 +2,7 @@
   "name": "@aidinabedi/ga4mp",
   "version": "0.0.8",
   "description": "An Open-Source Google Analytics 4 Client-Side Protocol Implementation",
-  "main": "dist/ga4mp.min.js",
+  "main": "dist/ga4mp.js",
   "module": "dist/ga4mp.esm.min.js",
   "browser": "dist/ga4mp.min.js",
   "scripts": {
