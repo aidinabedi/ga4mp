@@ -24,7 +24,7 @@ const version = '0.0.8'
 
 const ga4mp = function (measurement_ids, config = {}) {
     if (!measurement_ids)
-        throw 'Tracker initialization aborted: missing tracking ids'
+        throw new Error('Tracker initialization aborted: missing tracking ids')
     const internalModel = Object.assign(
         {
             version,
