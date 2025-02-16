@@ -277,6 +277,7 @@ const ga4mp = function (measurement_ids, config = {}) {
                     r.tid = payload.tid[i]
                     sendRequest(internalModel.endpoint, r, internalModel.mode, {
                         user_agent: internalModel?.user_agent,
+                        encode_search_params: internalModel?.encode_search_params,
                     })
                 }
                 internalModel.payloadData.hit_count++
