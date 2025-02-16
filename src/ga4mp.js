@@ -90,12 +90,7 @@ const ga4mp = function (measurement_ids, config = {}) {
     internalModel.payloadData.user_ip_address = config.user_ip_address
         ? config.user_ip_address
         : undefined
-    internalModel.userAgent = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 [GA4MP/${version}]`
 
-    // Initialize Tracker Data
-    if (internalModel === 'node' && config.user_agent) {
-        internalModel.user_agent = config.user_agent
-    }
     // Grab data only browser data
     if (internalModel.mode === 'browser') {
         const pageData = pageDetails()
@@ -288,8 +283,8 @@ const ga4mp = function (measurement_ids, config = {}) {
                     let r = JSON.parse(JSON.stringify(payload))
                     r.tid = payload.tid[i]
                     sendRequest(internalModel.endpoint, r, internalModel.mode, {
-                        user_agent: internalModel?.user_agent,
-                        encode_search_params: internalModel?.encode_search_params,
+                        user_agent: internalModel.user_agent,
+                        encode_search_params: internalModel.encode_search_params,
                     })
                 }
                 internalModel.payloadData.hit_count++
