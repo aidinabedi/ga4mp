@@ -15,13 +15,13 @@ export const sendRequest = (endpoint, payload, mode = 'browser', opts = {}) => {
         navigator?.sendBeacon([endpoint, qs].join('?'))
     } else {
         const scheme = endpoint.split('://')[0]
-        const req = require(`${scheme}`)
+        const req = scheme === 'https' ? require('https') : require('http');
         const options = {
             headers: {
-                'User-Agent': opts.user_agent 
+                'User-Agent': opts.user_agent
             },
             timeout: 500,
-        }        
+        }
         const request = req
             .get([endpoint, qs].join('?'), options, (resp) => {
                 let data = ''
@@ -29,7 +29,7 @@ export const sendRequest = (endpoint, payload, mode = 'browser', opts = {}) => {
                     data += chunk
                 })
                 resp.on('end', () => {
-                    // TO-DO Handle Server Side Responses                    
+                    // TO-DO Handle Server Side Responses
                 })
             })
             .on('error', (err) => {
