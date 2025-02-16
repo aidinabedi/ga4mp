@@ -1,6 +1,6 @@
 {
   "name": "@aidinabedi/ga4mp",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "An Open-Source Google Analytics 4 Client-Side Protocol Implementation",
   "types": "dist/ga4mp.d.ts",
   "main": "dist/ga4mp.js",
